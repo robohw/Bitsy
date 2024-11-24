@@ -1,4 +1,4 @@
-program bitsy; // 2024.11.24  - Usage: bitsy.exe < file_in  > file_out 
+program bitsy; // 2024.11.24  - Usage: bitsy.exe < file.in  > file.out 
 uses SysUtils, StrUtils; 
 
 type
