@@ -1,0 +1,11 @@
+; a simple loop with LineFeed 
+; ---------------------------
+
+TRC                 ; trace turn ON
+B = 0
+
+.LOOP               ; LOOP label
+ B = B + 1 
+ PRN B 
+ PRN T
+IF B < 5 JMP .LOOP
