@@ -1,12 +1,11 @@
-program bitsy; // 2024.11.24
-
+program bitsy; // 2024.11.24  - Usage: bitsy.exe < file_in  > file_out 
 uses SysUtils, StrUtils; 
+
 type
   TLabel = record
     Name: string;
     Addr: Byte;
   end;
-
 var
   Code    : array of string;
   Tokens  : TStringArray;
@@ -37,8 +36,7 @@ end;
 
 procedure SetLabelAddr(const Name: string; Addr: Byte);
 begin
-  for i := 0 to High(Labels) do
-    if Labels[i].Name = Name then Error('Label ' + Name + ' already exists.');
+  for i := 0 to High(Labels) do if Labels[i].Name = Name then Error('Label ' + Name + ' already exists.');
   SetLength(Labels, Length(Labels) + 1);
   Labels[High(Labels)].Name := Name;
   Labels[High(Labels)].Addr := Addr;
