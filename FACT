@@ -1,0 +1,29 @@
+; Bitsy factorial.   Usage:
+; Bitsy.exe < FACT > FACT.out
+; ---------------------------
+TRC                 ; Enable trace mode
+
+N = 5               ; N = Number to calculate factorial
+F = 1               ; Result   (start with 1)
+P = 1               ; Decrementer
+P !                 ; One's complement
+P = P + 1           ; Two's complement (P = -1)
+
+.LOOP               ; LOOP label 
+IF N = 0 JMP .DONE  ; If N is 0, jump to the end
+T = F               ; Copy F to T (temp multiplier)
+F = 0               ; Reset F to accumulate the new product
+
+.MULT               ; Start label for the multiplication loop
+IF T = 0 JMP .NEXT  ; If T is 0, stop multiplying
+F = F + N           ; Add N to F
+T = T + P           ; Decrease T by 1
+JMP .MULT           ; Continue multiplying
+
+.NEXT               ; Label for moving to the next iteration
+N = N + P           ; Decrease N by 1
+JMP .LOOP           ; back into the .LOOP
+
+.DONE               ; End of Bitsy prog
+PRN F               ; Print the result 
+
