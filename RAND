@@ -1,0 +1,11 @@
+; R as RANDOM number source
+; simple random number generator
+; ------------------------------ 
+TRC
+
+.LOOP
+B = R
+PRN B 
+PRN T
+IF B < 88 JMP .LOOP
+ 

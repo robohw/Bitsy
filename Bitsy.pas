@@ -1,18 +1,20 @@
-program bitsy; // 2024.11.24  - Usage: bitsy.exe < file.in  > file.out 
-uses SysUtils, StrUtils; 
+program bitsy; //  Usage: bitsy.exe < script.in > script.out
 
+                         {KeyWords: IF, JMP, RET, PRN.  Built-in Vars: 'B'..'Z' }
+uses SysUtils, StrUtils; 
 type
   TLabel = record
     Name: string;
     Addr: Byte;
   end;
+
 var
   Code    : array of string;
-  Tokens  : TStringArray;
+  Tok     : TStringArray;               // Tokens buffer 
   Labels  : array of TLabel;
-  Vars    : array['B'..'Z'] of LongInt;
-  LineNum : byte = 0;
-  Stack   : byte = 0;                  // PSEUDO stack for RET-urn
+  Vars    : array['B'..'Z'] of LongInt; // built-in Vars. Without "A" for compatibility
+  LineNum : byte = 0;                   // "A" is reserved for ARRAY
+  Stack   : byte = 0;                   // PSEUDO stack for RET-urn
   Trace   : Boolean = False;
   i       : integer;
   
@@ -28,15 +30,15 @@ end;
   
 procedure Error(const Msg: string);
 begin
-  Writeln('ERROR: ', Msg);
-  Writeln(code[lineNum-1]);
+  Writeln('ERROR: ', Msg, Chr(10), code[lineNum-1]);
   if Trace then PrintState;
   Halt;
 end;
 
 procedure SetLabelAddr(const Name: string; Addr: Byte);
 begin
-  for i := 0 to High(Labels) do if Labels[i].Name = Name then Error('Label ' + Name + ' already exists.');
+  for i := 0 to High(Labels) do
+    if Labels[i].Name = Name then Error('Label ' + Name + ' already exists.');
   SetLength(Labels, Length(Labels) + 1);
   Labels[High(Labels)].Name := Name;
   Labels[High(Labels)].Addr := Addr;
@@ -45,34 +47,33 @@ end;
 function GetLabelAddr(const Name: string): Byte;
 begin
   GetLabelAddr := 0;
-  for i := 0 to High(Labels) do if Labels[i].Name = Name then Exit(Labels[i].Addr);
+  for i:= 0 to High(Labels) do if Labels[i].Name= Name then Exit(Labels[i].Addr);
+  Error('Label "'+Name+'" missing');
 end;
 
 function GetVal(const Index: Byte): Integer;
 begin
-  case Tokens[Index][1] of
-    'B'..'Q': GetVal := Vars[Tokens[Index][1]];
-    'R': GetVal := Random(Vars['R']+1);
-    'S'..'Z': Getval := Byte(Vars[Tokens[Index][1]]);
+  case Tok[Index][1] of
+    'B'..'Q': GetVal := Vars[Tok[Index][1]];
+    'R'     : GetVal := Random(Vars['R']+1);
+    'S'..'Z': Getval := Byte(Vars[Tok[Index][1]]);
   else
-    GetVal := StrToInt(Tokens[Index]);
+    GetVal := StrToInt(Tok[Index]);
   end;
 end;
 
 procedure Let(n: byte);
 begin
-  if not (Tokens[n][1] in ['B'..'Z']) then Error('invalid var ID: '+Tokens[n]);
-  if Tokens[n+1][1] = '!' then begin Vars[Tokens[n][1]]:= not Vars[Tokens[n][1]]; end
+  if not (Tok[n][1] in ['B'..'Z']) then Error('invalid var ID: '+Tok[n]);
+  if Tok[n+1][1] = '!' then Vars[Tok[n][1]]:= not Vars[Tok[n][1]] // One's complement
   else  
-  case Length(Tokens)-1 of
-    2, 6: Vars[Tokens[n][1]] := GetVal(Length(Tokens)-1);
+  case Length(Tok)-1 of
+    2, 6: Vars[Tok[n][1]]:= GetVal(Length(Tok)-1);
     4, 8:begin
-          case Tokens[Length(Tokens) - 2][1] of
-            '+': Vars[Tokens[n][1]]:= GetVal(Length(Tokens)-3) + GetVal(Length(Tokens)-1);   
-            '-': Vars[Tokens[n][1]]:= GetVal(Length(Tokens)-3) - GetVal(Length(Tokens)-1);
-            '*': Vars[Tokens[n][1]]:= GetVal(Length(Tokens)-3) * GetVal(Length(Tokens)-1);
-            '/': Vars[Tokens[n][1]]:= GetVal(Length(Tokens)-3) DIV GetVal(Length(Tokens)-1);
-            '%': Vars[Tokens[n][1]]:= GetVal(Length(Tokens)-3) MOD GetVal(Length(Tokens)-1);
+          case Tok[Length(Tok)-2][1] of
+            '+': Vars[Tok[n][1]]:= GetVal(Length(Tok)-3) + GetVal(Length(Tok)-1);   
+//          '-': Vars[Tok[n][1]]:= GetVal(Length(Tok)-3) - GetVal(Length(Tok)-1);
+// .. You can expand if You want
           end;
          end;
   else Error('in expression');
@@ -84,24 +85,24 @@ begin
   LineNum:= 1;      
   while LineNum < length(Code) do
   begin
-    Tokens:= SplitString(Code[LineNum],' ');    
+    Tok:= SplitString(Code[LineNum],' ');    
     Inc(LineNum);  
-    if Tokens[0][1]='.' then continue;
-    case Tokens[0] of  
+    if Tok[0][1]='.' then continue;
+    case Tok[0] of  
       'IF': begin
-             if (Tokens[2][1] = '<') and (GetVal(1) < GetVal(3)) or
-                (Tokens[2][1] = '=') and (GetVal(1) = GetVal(3)) then
-                case Tokens[4] of
-                 'JMP': begin Stack := linenum; LineNum := GetLabelAddr(Tokens[5]); end;
-                 'PRN': if (Tokens[5][1]in ['B'..'R']) then Write(Vars[Tokens[5][1]]) else
-                          Write(Chr(Vars[Tokens[5][1]]));
+             if (Tok[2][1] = '<') and (GetVal(1) < GetVal(3)) or
+                (Tok[2][1] = '=') and (GetVal(1) = GetVal(3)) then
+                case Tok[4] of
+                 'JMP': begin Stack:= linenum;  LineNum:= GetLabelAddr(Tok[5]); end;
+                 'PRN': if (Tok[5][1]in ['B'..'R']) then Write(Vars[Tok[5][1]]) else
+                          Write(Chr(Vars[Tok[5][1]]));
                 else Let(4);
                 end; // case
              end;
-      'JMP': begin Stack := linenum; LineNum := GetLabelAddr(Tokens[1]); end;
+      'JMP': begin Stack:= linenum;  LineNum:= GetLabelAddr(Tok[1]); end;
       'RET': if (Stack <> 0) then LineNum:= Stack else Error('No way to RETURN');              
-      'PRN': if (Tokens[1][1]in ['B'..'R']) then Write(Vars[Tokens[1][1]]) else
-               Write(Chr(Vars[Tokens[1][1]]));
+      'PRN': if (Tok[1][1]in ['B'..'R']) then Write(Vars[Tok[1][1]]) else
+               Write(Chr(Vars[Tok[1][1]]));
     else Let(0);
     end; // case
   end; // while
@@ -112,14 +113,14 @@ var
   Line: string;
 begin
   Randomize;
-  Vars['R'] := 99;  Vars['S'] := 32;  Vars['T'] := 10;
+  Vars['R'] := 99; {RND}  Vars['S'] := 32; {space}  Vars['T'] := 10; {NewLine PreSET}
   SetLength(Code,0);   
   SetLength(Labels,0);
 
   while not Eof(Input) do
   begin
     ReadLn(Line);
-    Line := UpCase(Trim(Copy(Line, 1, Pos(';', Line + ';') - 1))); // Remove comments    
+    Line := UpCase(Trim(Copy(Line, 1, Pos(';', Line+';')-1))); // Remove comments    
     if (line = '') then continue;  
     if (line = 'TRC') then trace := true
     else
