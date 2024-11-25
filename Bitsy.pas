@@ -61,7 +61,8 @@ end;
 
 procedure Let(n: byte);
 begin
-  if not (Tokens[n][1] in ['B'..'Z']) then Error('invalid var ID: '+Tokens[n])
+  if not (Tokens[n][1] in ['B'..'Z']) then Error('invalid var ID: '+Tokens[n]);
+  if Tokens[n+1][1] = '!' then begin Vars[Tokens[n][1]]:= not Vars[Tokens[n][1]]; end
   else  
   case Length(Tokens)-1 of
     2, 6: Vars[Tokens[n][1]] := GetVal(Length(Tokens)-1);
