@@ -1,0 +1,23 @@
+; multiplicator
+; -------------
+
+TRC
+
+Q = 0               ; Result
+B = 6               ; Multiplicand
+C = 3               ; Multiplier
+P = 1               ; Decrementer  
+P !                 ; One's complement of P
+P = P + 1           ; Two's complement of P 
+
+.LOOP               ; loop label
+IF C = 0 JMP .DONE  ; If the multiplier is 0, exit
+Q = Q + B           ; Add multiplicand to the result
+C = C + P           ; Decrement the multiplier
+JMP .LOOP           ; Return into the loop
+
+.DONE               ; Final label
+PRN Q               ; Print the result
+
+
+                   
