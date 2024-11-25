@@ -13,7 +13,8 @@ JMP .LOOP           ; JUMP TO BEGIN
 RET                 ; RETURN TO JMP 
 
 .LOOP               ; MAIN LOOP  
- PRN U S            ; ASCII + SPACE 
+ PRN U              ; ASCII 
+ PRN S              ; + SPACE 
  IF B = 8 JMP .SUB 
  U = U + 1          ; INC U AS ASCII
  B = B + 1 
