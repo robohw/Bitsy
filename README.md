@@ -30,7 +30,7 @@ analise the content of FIBO.OUT
 The sample files:  
 
 FIBO  
-FACT 
+FACT  
 ASCII  
 MULT  
 MATH  
