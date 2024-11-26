@@ -27,13 +27,15 @@ type:
   
 analise the content of FIBO.OUT 
 
-The sample files:
+The sample files:  
 
-FACT  
+FIBO  
+FACT 
 ASCII  
 MULT  
 MATH  
 RAND  
 LOOP  
+
 -------------------------------------------
 ![](bitsy_Logo_d.png)
