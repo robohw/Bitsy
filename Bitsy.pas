@@ -17,7 +17,7 @@ var
   Stack   : Byte = 0;                   // PSEUDO stack for RET-urn
   Trace   : Boolean = False;
   i       : Integer;
-  Counter : Integer = 0; 
+  Counter : LongInt = 0; 
   
 procedure PrintState;
 begin
