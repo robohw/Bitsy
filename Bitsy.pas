@@ -12,19 +12,18 @@ var
   Code    : array of string;
   Tok     : TStringArray;               // Tokens buffer 
   Labels  : array of TLabel;
-  Vars    : array['B'..'Z'] of LongInt; // built-in Vars. Without "A" for compatibility
-  LineNum : byte = 0;                   // "A" is reserved for ARRAY
-  Stack   : byte = 0;                   // PSEUDO stack for RET-urn
+  Vars    : array['B'..'Z'] of LongInt; // built-in Vars. Without "A" for compatibility, 
+  LineNum : Byte = 0;                   // "A" is reserved for ARRAY
+  Stack   : Byte = 0;                   // PSEUDO stack for RET-urn
   Trace   : Boolean = False;
-  i       : integer;
+  i       : Integer;
+  Counter : Integer = 0; 
   
 procedure PrintState;
 begin
-  Writeln;
-  Writeln('----------- Code:');
+  Writeln(Chr(10), '----------- (',counter,' lines done) Code:');
   for i := 1 to High(Code) do Writeln(i, '  ', Code[i]);
-  Writeln;
-  Writeln('----------- Variables (B..R, S..Z):');
+  Writeln(Chr(10), '----------- Variables (B..R, S..Z):');
   for i := 1 to 25 do Writeln(Chr(i + 65), ' ', Vars[Chr(i + 65)]);
 end;
   
@@ -105,6 +104,7 @@ begin
                Write(Chr(Vars[Tok[1][1]]));
     else Let(0);
     end; // case
+    if (counter < 999999) then inc(counter) else Error ('infinit loop?'); 
   end; // while
 end;
 
