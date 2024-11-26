@@ -50,7 +50,7 @@ begin
   Error('Label "'+Name+'" missing');
 end;
 
-function GetVal(const Index: Byte): Integer;
+function GetVal(const Index: Byte): LongInt;
 begin
   case Tok[Index][1] of
     'B'..'Q': GetVal := Vars[Tok[Index][1]];
