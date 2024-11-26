@@ -1,1 +1,1 @@
-![](bitsy_logo_d.png)
+![](bitsy_Logo_d.png)
