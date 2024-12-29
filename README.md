@@ -11,7 +11,7 @@
     
 Keywords: if, jmp, prn, ret, + TRC (means TRACE)  
 Math  Operators: + (add) ! (neg)  
-Logic Operators: < (less) = (equ) 
+Logic Operators: + (greater) ! (not equ) 
 
 Bitsy uses Built-in Variables.   
 The Var IDs: B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,Q, R, S,T,U,V,W,X,Y,Z  
@@ -20,7 +20,7 @@ R    - RANDOM number gererator (r/w)
 S..Z - 8 bit ASCII codes.    
     
 compile it with freepascal: 
-### fpc atto.pas ###   
+### fpc bitsy.pas ###   
   
 type: 
 ### Bitsy.exe < FIBO > FIBO.OUT ###    
