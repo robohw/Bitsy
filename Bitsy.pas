@@ -89,8 +89,8 @@ begin
     if Tok[0][1]='.' then continue;
     case Tok[0] of  
       'IF': begin
-             if (Tok[2][1] = '<') and (GetVal(1) < GetVal(3)) or
-                (Tok[2][1] = '=') and (GetVal(1) = GetVal(3)) then
+             if (Tok[2][1] = '+') and (GetVal(1) > GetVal(3)) or
+                (Tok[2][1] = '!') and (GetVal(1) <> GetVal(3)) then
                 case Tok[4] of
                  'JMP': begin Stack:= linenum;  LineNum:= GetLabelAddr(Tok[5]); end;
                  'PRN': if (Tok[5][1]in ['B'..'R']) then Write(Vars[Tok[5][1]]) else
